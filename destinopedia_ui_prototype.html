@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinopedia - Jendela Informasi & Inspirasi Perjalanan Dunia</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                            gold: '#f59e0b',
+                            dark: '#0f172a',
+                            surface: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+
+        .font-serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Glassmorphism utility */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0d9488;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.85) 70%, rgba(11,15,25,1) 100%);
+        }
+
+        .tab-active {
+            border-bottom: 3px solid #14b8a6;
+            color: #14b8a6;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center shadow-lg shadow-brand-500/30 text-white font-bold text-xl">
+                    <i class="fa-solid me-0.5 fa-compass"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-bold tracking-tight text-white font-serif-title">Destinopedia</span>
+                    <span class="hidden md:block text-[10px] text-teal-400 tracking-widest uppercase font-semibold">Jendela Informasi Dunia</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links (Desktop) -->
+            <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#hero" class="hover:text-brand-500 transition-colors">Eksplorasi Utama</a>
+                <a href="#guide-tabs" class="hover:text-brand-500 transition-colors">Panduan Lengkap</a>
+                <a href="#explore" class="hover:text-brand-500 transition-colors">Katalog Negara</a>
+                <a href="#etiquette-preview" class="hover:text-brand-500 transition-colors">Tips & Etika</a>
+            </nav>
+
+            <!-- Actions & Search & Bucket List Button -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <!-- Search Button / Input Container -->
+                <div class="relative">
+                    <button id="open-search-btn" class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/60 text-xs sm:text-sm transition-all">
+                        <i class="fa-solid fa-magnifying-glass text-brand-500"></i>
+                        <span class="hidden sm:inline">Cari negara/tradisi...</span>
+                    </button>
+                </div>
+
+                <!-- Bucket List Trigger Button -->
+                <button id="bucket-list-btn" class="relative bg-brand-600 hover:bg-brand-500 text-white px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-2 transition-all shadow-lg shadow-brand-600/30">
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span class="hidden md:inline">Impian Saya</span>
+                    <span id="bucket-count" class="bg-amber-500 text-slate-950 font-bold rounded-full w-5 h-5 flex items-center justify-center text-[10px]">0</span>
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="lg:hidden text-slate-300 hover:text-white p-2">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-900/95 border-b border-slate-800 px-4 pt-2 pb-6 space-y-3">
+            <a href="#hero" class="block py-2 text-slate-200 hover:text-brand-500 border-b border-slate-800/50">Eksplorasi Utama</a>
+            <a href="#guide-tabs" class="block py-2 text-slate-200 hover:text-brand-500 border-b border-slate-800/50">Panduan Lengkap</a>
+            <a href="#explore" class="block py-2 text-slate-200 hover:text-brand-500 border-b border-slate-800/50">Katalog Negara</a>
+            <a href="#etiquette-preview" class="block py-2 text-slate-200 hover:text-brand-500">Tips & Etika</a>
+        </div>
+    </header>
+
+    <!-- SEARCH OVERLAY MODAL -->
+    <div id="search-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-start justify-center pt-20 px-4 hidden transition-opacity">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative">
+            <button id="close-search-btn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="flex items-center space-x-3 border-b border-slate-700 pb-4">
+                <i class="fa-solid fa-magnifying-glass text-brand-500 text-xl"></i>
+                <input type="text" id="global-search-input" placeholder="Ketik nama negara, destinasi, atau budaya (contoh: Jepang, Aurora, Eiffel)..." class="bg-transparent border-none outline-none text-white w-full text-base sm:text-lg placeholder-slate-500">
+            </div>
+            <div id="search-results-container" class="mt-4 max-h-80 overflow-y-auto space-y-2">
+                <p class="text-xs text-slate-400 italic">Coba ketik kata kunci di atas untuk mencari secara langsung...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="pt-20">
+
+        <!-- HERO SECTION: INTERACTIVE FEATURED COUNTRY BANNER -->
+        <section id="hero" class="relative min-h-[85vh] flex items-end pb-12 overflow-hidden">
+            <!-- Dynamic Background Image & Overlay -->
+            <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 scale-105" style="background-image: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1600&auto=format&fit=crop');"></div>
+            <div class="absolute inset-0 hero-gradient"></div>
+
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
+                <!-- Country Pills Selector -->
+                <div class="flex flex-wrap gap-2 mb-6" id="hero-country-pills">
+                    <!-- Dynamic Pills Generated by JS -->
+                </div>
+
+                <!-- Hero Content Box -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-brand-500/20 border border-brand-500/40 text-teal-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md">
+                            <span id="hero-flag-icon" class="text-sm">🇯🇵</span>
+                            <span id="hero-continent-tag">Asia Timur</span>
+                        </div>
+                        <h1 id="hero-title" class="text-4xl sm:text-6xl font-bold font-serif-title tracking-tight text-white leading-tight">
+                            Jepang
+                        </h1>
+                        <p id="hero-subtitle" class="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
+                            Harmoni memukau antara tradisi leluhur ribuan tahun dan kemajuan teknologi masa depan, diselimuti keindahan Gunung Fuji & pesona bunga Sakura.
+                        </p>
+
+                        <!-- Key Quick Info Cards -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4" id="hero-stats-grid">
+                            <div class="glass-card p-3 rounded-xl">
+                                <span class="text-[11px] text-slate-400 block uppercase font-medium">Ibu Kota</span>
+                                <span id="stat-capital" class="text-sm font-semibold text-white">Tokyo</span>
+                            </div>
+                            <div class="glass-card p-3 rounded-xl">
+                                <span class="text-[11px] text-slate-400 block uppercase font-medium">Mata Uang</span>
+                                <span id="stat-currency" class="text-sm font-semibold text-amber-400">Yen (JPY)</span>
+                            </div>
+                            <div class="glass-card p-3 rounded-xl">
+                                <span class="text-[11px] text-slate-400 block uppercase font-medium">Bahasa</span>
+                                <span id="stat-language" class="text-sm font-semibold text-white">Jepang</span>
+                            </div>
+                            <div class="glass-card p-3 rounded-xl">
+                                <span class="text-[11px] text-slate-400 block uppercase font-medium">Waktu Terbaik</span>
+                                <span id="stat-besttime" class="text-sm font-semibold text-teal-400">Maret - Mei</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action Side Button -->
+                    <div class="lg:col-span-4 flex lg:justify-end">
+                        <button id="hero-explore-btn" class="w-full sm:w-auto bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700/80 px-6 py-4 rounded-2xl flex items-center justify-between space-x-4 backdrop-blur-lg group transition-all">
+                            <div class="text-left">
+                                <span class="text-xs text-teal-400 font-semibold uppercase tracking-wider block">Pelajari Detail</span>
+                                <span class="font-medium text-sm text-slate-200">Panduan Budaya & Wisata</span>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-brand-600 group-hover:bg-brand-500 flex items-center justify-center transition-colors">
+                                <i class="fa-solid fa-arrow-right text-white"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COUNTRY DETAIL DASHBOARD (INTERACTIVE TABS SECTION) -->
+        <section id="guide-tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-slate-800">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold font-serif-title text-white">
+                        Eksplorasi Detil: <span id="selected-country-name" class="text-brand-500">Jepang</span>
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Panduan praktis non-booking untuk mempersiapkan wawasan kunjungan Anda.</p>
+                </div>
+
+                <!-- Interactive Tab Navigation Controls -->
+                <div class="flex space-x-1 sm:space-x-2 overflow-x-auto pt-4 md:pt-0 no-scrollbar">
+                    <button class="tab-btn tab-active px-4 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap transition-all" data-tab="spots">
+                        <i class="fa-solid fa-landmark me-1.5"></i>Spot Wisata
+                    </button>
+                    <button class="tab-btn text-slate-400 hover:text-white px-4 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap transition-all" data-tab="culture">
+                        <i class="fa-solid fa-handshake me-1.5"></i>Etika & Budaya
+                    </button>
+                    <button class="tab-btn text-slate-400 hover:text-white px-4 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap transition-all" data-tab="seasons">
+                        <i class="fa-solid fa-cloud-sun me-1.5"></i>4 Musim
+                    </button>
+                    <button class="tab-btn text-slate-400 hover:text-white px-4 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap transition-all" data-tab="food">
+                        <i class="fa-solid fa-utensils me-1.5"></i>Kuliner Wajib
+                    </button>
+                    <button class="tab-btn text-slate-400 hover:text-white px-4 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap transition-all" data-tab="facts">
+                        <i class="fa-solid fa-lightbulb me-1.5"></i>Fakta Unik
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT CONTAINER -->
+            <div id="tab-content-area" class="min-h-[400px]">
+                <!-- Content will be rendered dynamically based on selected active tab and country -->
+            </div>
+        </section>
+
+        <!-- GLOBAL EXPLORER & CATALOG SECTION -->
+        <section id="explore" class="bg-slate-900/60 py-16 border-y border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <span class="text-brand-500 font-semibold text-xs tracking-widest uppercase">Eksplorasi Tanpa Batas</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold font-serif-title text-white mt-1">Katalog Negara & Destinasi</h2>
+                    <p class="text-slate-400 text-sm mt-2">Filter berdasarkan Benua atau Suasana (*Vibe*) perjalanan yang Anda cari.</p>
+                </div>
+
+                <!-- Filter Controls Bar -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                    <!-- Continent Filter Buttons -->
+                    <div class="flex flex-wrap justify-center gap-2" id="continent-filters">
+                        <button class="continent-btn active bg-brand-600 text-white px-4 py-1.5 rounded-xl text-xs font-medium transition-all" data-continent="all">Semua Benua</button>
+                        <button class="continent-btn bg-slate-800 text-slate-300 hover:bg-slate-700 px-4 py-1.5 rounded-xl text-xs font-medium transition-all" data-continent="Asia">Asia</button>
+                        <button class="continent-btn bg-slate-800 text-slate-300 hover:bg-slate-700 px-4 py-1.5 rounded-xl text-xs font-medium transition-all" data-continent="Eropa">Eropa</button>
+                        <button class="continent-btn bg-slate-800 text-slate-300 hover:bg-slate-700 px-4 py-1.5 rounded-xl text-xs font-medium transition-all" data-continent="Amerika">Amerika</button>
+                        <button class="continent-btn bg-slate-800 text-slate-300 hover:bg-slate-700 px-4 py-1.5 rounded-xl text-xs font-medium transition-all" data-continent="Oseania">Oseania</button>
+                    </div>
+
+                    <!-- Vibe Filter Select -->
+                    <div class="w-full md:w-auto flex items-center space-x-2">
+                        <span class="text-xs text-slate-400 font-medium whitespace-nowrap"><i class="fa-solid fa-filter me-1"></i>Suasana:</span>
+                        <select id="vibe-filter-select" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 outline-none w-full md:w-auto">
+                            <option value="all">Semua Vibe / Katagori</option>
+                            <option value="Alam">Wisata Alam & Pegunungan</option>
+                            <option value="Sejarah">Sejarah & Populer</option>
+                            <option value="Kuliner">Surga Kuliner</option>
+                            <option value="Romantis">Romantis & Pemandangan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Country Cards Grid -->
+                <div id="countries-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Dynamic Country Cards Rendered Here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK ETIQUETTE & TRAVEL PREPARATION SPOTLIGHT -->
+        <section id="etiquette-preview" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 border border-slate-700/60 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-7 space-y-4">
+                        <span class="text-amber-400 font-semibold text-xs uppercase tracking-widest"><i class="fa-solid fa-shield-halved me-1"></i>Penting Sebelum Berangkat</span>
+                        <h2 class="text-2xl sm:text-3xl font-bold font-serif-title text-white">Etika Universal Wisatawan Luar Negeri</h2>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Setiap negara memiliki norma sosial dan hukum lokal yang sangat dijunjung. Menjadi wisatawan yang sopan memastikan pengalaman liburan aman dan menyenangkan.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            <div class="flex items-start space-x-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                                <i class="fa-solid fa-camera-rotate text-brand-500 text-base mt-0.5"></i>
+                                <div>
+                                    <h4 class="text-xs font-semibold text-white">Izin Merekam & Foto</h4>
+                                    <p class="text-[11px] text-slate-400">Selalu minta izin saat mengambil foto warga lokal atau area sakral.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                                <i class="fa-solid fa-coins text-amber-400 text-base mt-0.5"></i>
+                                <div>
+                                    <h4 class="text-xs font-semibold text-white">Aturan Tip (Tipping)</h4>
+                                    <p class="text-[11px] text-slate-400">Di Jepang tip dianggap tidak sopan, namun di AS tip bersifat wajib.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3">
+                        <h3 class="text-sm font-semibold text-white flex items-center">
+                            <i class="fa-solid fa-passport text-brand-500 me-2"></i>Checklist Persiapan Utama
+                        </h3>
+                        <ul class="space-y-2 text-xs text-slate-300">
+                            <li class="flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-check text-teal-400"></i>
+                                <span>Masa berlaku Paspor minimal 6 bulan.</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-check text-teal-400"></i>
+                                <span>Periksa persyaratan Visa / E-Visa negara tujuan.</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-check text-teal-400"></i>
+                                <span>Siapkan adaptor colokan listrik sesuai standar negara.</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-check text-teal-400"></i>
+                                <span>Sediakan kartu debit/kredit internasional & sedikit uang tunai lokal.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BUCKET LIST SIDEBAR / DRAWER -->
+    <div id="bucket-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bookmark text-amber-500 text-lg"></i>
+                <h3 class="text-lg font-bold text-white font-serif-title">Daftar Impian Saya</h3>
+            </div>
+            <button id="close-bucket-btn" class="text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Bucket Items List Area -->
+        <div id="bucket-items-container" class="flex-1 overflow-y-auto p-5 space-y-3">
+            <!-- Dynamic Items -->
+        </div>
+
+        <div class="p-5 border-t border-slate-800 bg-slate-950/60">
+            <p class="text-[11px] text-slate-400 text-center mb-3">Item disimpan secara lokal di browser Anda untuk inspirasi perencanaan perjalanan mendatang.</p>
+            <button id="clear-bucket-btn" class="w-full bg-slate-800 hover:bg-red-950/50 hover:text-red-400 text-slate-400 border border-slate-700 py-2 rounded-xl text-xs font-medium transition-colors">
+                Hapus Semua Simpanan
+            </button>
+        </div>
+    </div>
+
+    <!-- DETAILED MODAL FOR FULL COUNTRY/ATTRACTION INFO -->
+    <div id="detail-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <button id="close-detail-modal" class="absolute top-4 right-4 z-10 bg-slate-900/80 text-slate-300 hover:text-white p-2.5 rounded-full backdrop-blur-md">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modal-content">
+                <!-- Dynamically filled modal content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 py-12 text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold">
+                    <i class="fa-solid fa-compass text-sm"></i>
+                </div>
+                <div>
+                    <span class="text-sm font-bold text-white font-serif-title">Destinopedia</span>
+                    <p class="text-[11px] text-slate-500">Portal Edukasi & Panduan Informasi Tempat Wisata Luar Negeri.</p>
+                </div>
+            </div>
+
+            <p class="text-center md:text-right text-slate-500">
+                &copy; 2026 Destinopedia. Bukan situs pemesanan tiket. Didesain untuk edukasi visual UI/UX Figma Prototype.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // MASTER COUNTRY DATABASE (RICH INFORMATIONAL CONTENT)
+        const countriesData = [
+            {
+                id: "jepang",
+                name: "Jepang",
+                flag: "🇯🇵",
+                continent: "Asia",
+                vibe: "Sejarah",
+                capital: "Tokyo",
+                currency: "Yen (JPY)",
+                language: "Jepang",
+                bestTime: "Maret - Mei & Okt - Nov",
+                heroImg: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1600&auto=format&fit=crop",
+                overview: "Harmoni memukau antara tradisi leluhur ribuan tahun dan kemajuan teknologi masa depan, diselimuti keindahan Gunung Fuji & pesona bunga Sakura.",
+                spots: [
+                    { name: "Gunung Fuji & Danau Kawaguchiko", rating: "4.9", bestSpot: "Chureito Pagoda", entry: "Gratis (Area Luar)", time: "Matahari Terbit / Pagi Hari", desc: "Ikon kebanggaan Jepang dengan pemandangan gletser dan danau vulkanik yang menawan." },
+                    { name: "Kiyomizu-dera, Kyoto", rating: "4.8", bestSpot: "Panggung Kayu Utama", entry: "¥400 JPY", time: "Sore menjelang Sunset", desc: "Kuil bersejarah kayu megah tanpa paku yang menawarkan panorama bunga sakura dan dedaunan musim gugur." },
+                    { name: "Shibuya Crossing, Tokyo", rating: "4.7", bestSpot: "Lantai Atas Magnet Shibuya", entry: "Gratis", time: "Malam Hari", desc: "Persimpangan pejalan kaki tersibuk di dunia dengan nuansa papan neon futuristik." }
+                ],
+                dos: [
+                    "Lepas sepatu saat memasuki rumah, kuil, atau penginapan Ryokan.",
+                    "Kembalikan nampan dan bersihkan meja sendiri di tempat makan umum.",
+                    "Antre dengan tertib di garis petunjuk stasiun kereta."
+                ],
+                donts: [
+                    "Jangan memberikan uang tip (tipping dianggap menghina kualitas pelayanan).",
+                    "Jangan berbicara telepon dengan suara keras di dalam kereta publik.",
+                    "Jangan menusukkan sumpit secara tegak lurus di atas mangkuk nasi."
+                ],
+                seasons: {
+                    spring: "Musim Sakura (Maret - Mei). Bawa jaket ringan. Nikmati Hanami di taman.",
+                    summer: "Musim Panas & Festival (Juni - Agustus). Pakaian katun tipis. Penuh festival kembang api.",
+                    autumn: "Musim Gugur Dedaunan Merah (Sept - Nov). Udara sejuk bersahabat. Waktu terbaik berjalan kaki.",
+                    winter: "Musim Salju (Des - Feb). Pakaian hangat/thermal. Sangat cocok untuk ski di Hokkaido."
+                },
+                foods: [
+                    { name: "Ramen Otentik", tag: "Halal/Non-Halal Option", desc: "Mie kuah kaldu gurih dengan topping daging, telur rebus, dan nori." },
+                    { name: "Sushi & Sashimi Fresh", tag: "Seafood", desc: "Potongan ikan segar berkualitas tinggi di atas nasi cuka." },
+                    { name: "Matcha Dessert", tag: "Vegetarian", desc: "Olahan teh hijau khas Uji Kyoto beraroma kaya." }
+                ],
+                facts: [
+                    "Jepang memiliki lebih dari 5.000 vending machine yang menjual makanan dan minuman hangat.",
+                    "Tingkat ketepatan waktu kereta Shinkansen rata-rata keterlambatannya hanya 18 detik per tahun.",
+                    "Terdapat lebih dari 6.800 pulau dalam wilayah kepulauan Jepang."
+                ]
+            },
+            {
+                id: "islandia",
+                name: "Islandia",
+                flag: "🇮🇸",
+                continent: "Eropa",
+                vibe: "Alam",
+                capital: "Reykjavik",
+                currency: "Krona (ISK)",
+                language: "Islandia",
+                bestTime: "Sept - Maret (Aurora)",
+                heroImg: "https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1600&auto=format&fit=crop",
+                overview: "Negeri es dan api tempat air terjun raksasa, aurora borealis yang menari, serta pemandian geotermal alami berpadu harmonis.",
+                spots: [
+                    { name: "Blue Lagoon Geothermal Spa", rating: "4.9", bestSpot: "Kolam Mineral Silika", entry: "Mulai ~€80", time: "Sore Hari", desc: "Spa geotermal alami bersuhu hangat kaya mineral di tengah ladang lava hitam." },
+                    { name: "Air Terjun Gullfoss", rating: "4.8", bestSpot: "Dek Pengamatan Atas", entry: "Gratis", time: "Siang Hari", desc: "Air terjun bertingkat ganda raksasa bagian dari rute wisata Golden Circle." },
+                    { name: "Pantai Pasir Hitam Reynisfjara", rating: "4.7", bestSpot: "Pilar Basalt Reynisdrangar", entry: "Gratis", time: "Pagi Hari", desc: "Pantai vulkanik pasir hitam dramatis dengan struktur tebing kolom basalt unik." }
+                ],
+                dos: [
+                    "Selalu mandi bersih sebelum masuk ke pemandian geotermal publik.",
+                    "Periksa ramalan cuaca & jalanan (vedur.is) secara berkala.",
+                    "Sewa mobil 4x4 jika berniat melintasi jalur F-Road di pedalaman."
+                ],
+                donts: [
+                    "Jangan pernah berjalan di atas lumut vulkanik (membutuhkan waktu puluhan tahun untuk tumbuh kembali).",
+                    "Jangan meremehkan ombak mematikan (sneaker waves) di Reynisfjara.",
+                    "Jangan membeli air minum kemasan (air keran Islandia adalah salah satu yang tersegar di dunia)."
+                ],
+                seasons: {
+                    spring: "Musim Transisi (April - Mei). Pencairan es dan hari mulai memanjang.",
+                    summer: "Midnight Sun (Juni - Agustus). Matahari bersinar 24 jam. Pakaian lapis windbreaker.",
+                    autumn: "Awal Musim Aurora (Sept - Okt). Cuaca dingin & warna lanskap keemasan.",
+                    winter: "Aurora & Gua Es (Nov - Maret). Malam panjang, ideal untuk berburu Aurora Borealis."
+                },
+                foods: [
+                    { name: "Kjötsúpa", tag: "Sup Daging", desc: "Sup daging domba tradisional dengan sayuran akar yang menghangatkan." },
+                    { name: "Skyr", tag: "Produk Susu", desc: "Keju segar mirip yogurt kaya protein khas Islandia." },
+                    { name: "Plokkfiskur", tag: "Seafood", desc: "Rebusan ikan cod masakan rumahan dengan kentang dan krim." }
+                ],
+                facts: [
+                    "Islandia tidak memiliki nyamuk sama sekali karena kondisi iklim mikronya.",
+                    "Sekitar 85% energi di Islandia berasal dari sumber energi terbarukan geotermal & hidro.",
+                    "Lebih dari setengah populasi percaya akan keberadaan makhluk gaib / 'Elves'."
+                ]
+            },
+            {
+                id: "swiss",
+                name: "Swiss",
+                flag: "🇨🇭",
+                continent: "Eropa",
+                vibe: "Alam",
+                capital: "Bern",
+                currency: "Franc Swiss (CHF)",
+                language: "Jerman, Prancis, Italia",
+                bestTime: "Juni - Agustus & Des - Maret",
+                heroImg: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1600&auto=format&fit=crop",
+                overview: "Surga dunia di Pegunungan Alpen dengan desa-desa dongeng, danau bening bagai cermin, serta sistem kereta lanskap tercanggih.",
+                spots: [
+                    { name: "Jungfraujoch - Top of Europe", rating: "4.9", bestSpot: "Sphinx Observatory", entry: "Sesuai Tiket Kereta", time: "Pagi Hari cerah", desc: "Stasiun kereta api tertinggi di Eropa pada ketinggian 3.454 meter di atas permukaan laut." },
+                    { name: "Lauterbrunnen Valley", rating: "4.9", bestSpot: "Air Terjun Staubbach", entry: "Gratis", time: "Siang Hari", desc: "Lembah memukau dengan 72 air terjun yang mengalir dari tebing batu raksasa." },
+                    { name: "Danau Lucerne & Kapellbrücke", rating: "4.7", bestSpot: "Jembatan Kayu Bersejarah", entry: "Gratis", time: "Sore menjelang Senja", desc: "Danau anggun dikelilingi puncak Alpen dengan jembatan kayu dari abad ke-14." }
+                ],
+                dos: [
+                    "Gunakan transportasi umum (Swiss Travel Pass) yang sangat tepat waktu.",
+                    "Bawa botol minum sendiri karena air mancur publik sangat bersih dan layak minum.",
+                    "Sapa warga lokal saat memasuki toko kecil ('Grüezi')."
+                ],
+                donts: [
+                    "Jangan membuat kebisingan pada hari Minggu (hari tenang nasional).",
+                    "Jangan membuang sampah sembarangan (denda sangat tinggi).",
+                    "Jangan berasumsi semua orang menggunakan mata uang Euro (gunakan Franc CHF)."
+                ],
+                seasons: {
+                    spring: "Bunga Meleleh (April - Mei). Lembah hijau dengan puncak gunung masih bersalju.",
+                    summer: "Hiking & Danau (Juni - Agustus). Cuaca sejuk hangat, ideal untuk jalan-jalan outdoor.",
+                    autumn: "Musim Panen Anggur (Sept - Okt). Warna dedaunan Alpen berubah keemasan.",
+                    winter: "Ski & Pasar Natal (Nov - Maret). Surga olahraga salju dunia."
+                },
+                foods: [
+                    { name: "Swiss Cheese Fondue", tag: "Olahan Keju", desc: "Keju leleh hangat dalam kuali untuk mencelupkan potongan roti." },
+                    { name: "Rösti", tag: "Vegetarian", desc: "Hidangan kentang parut garing khas sarapan Swiss." },
+                    { name: "Cokelat Artisan Swiss", tag: "Manis", desc: "Cokelat susu olahan halus legendaris dunia." }
+                ],
+                facts: [
+                    "Swiss memiliki lebih dari 7.000 danau alami.",
+                    "Dilarang hukum memelihara hanya satu ekor hewan sosial seperti babi guinea karena dianggap membuat mereka kesepian.",
+                    "Bendera Swiss berformat bujur sangkar sempurna (satu dari dua di dunia bersama Vatikan)."
+                ]
+            },
+            {
+                id: "italia",
+                name: "Italia",
+                flag: "🇮🇹",
+                continent: "Eropa",
+                vibe: "Romantis",
+                capital: "Roma",
+                currency: "Euro (EUR)",
+                language: "Italia",
+                bestTime: "April - Juni & Sept - Okt",
+                heroImg: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?q=80&w=1600&auto=format&fit=crop",
+                overview: "Pusat peradaban sejarah Kekaisaran Romawi, karya seni renaisans teragung, pantai eksotis, dan kelezatan kuliner legendaris.",
+                spots: [
+                    { name: "Colosseum, Roma", rating: "4.8", bestSpot: "Area Arena Utama", entry: "~€16", time: "Pagi Hari", desc: "Amfiteater kuno peninggalan Romawi tempat pertunjukan gladiator masa lampau." },
+                    { name: "Kanal Utama Venesia", rating: "4.8", bestSpot: "Jembatan Rialto", entry: "Gratis", time: "Matahari Terbenam", desc: "Kota air romantis tanpa mobil dengan perahu Gondola yang ikonik." },
+                    { name: "Desa Warna-Warni Positano (Amalfi)", rating: "4.9", bestSpot: "Pantai Marina Grande", entry: "Gratis", time: "Sore Hari", desc: "Rumah-rumah tebing berwarna pastel menghadap Laut Tirenian yang biru." }
+                ],
+                dos: [
+                    "Berpakaian sopan (bahu & lutut tertutup) saat mengunjungi gereja/Katedral.",
+                    "Ucapkan 'Buongiorno' (Selamat pagi) saat masuk ke kedai lokal.",
+                    "Minum espresso dengan berdiri di bar kopi seperti warga lokal."
+                ],
+                donts: [
+                    "Jangan memesan Cappuccino setelah jam 11 siang (dianggap mengganggu pencernaan).",
+                    "Jangan memotong mi Spaghetti menggunakan pisau.",
+                    "Jangan memotong antrean gelato atau arena sejarah."
+                ],
+                seasons: {
+                    spring: "Keindahan Bunga (April - Juni). Cuaca hangat ideal tanpa kepadatan turis berlebih.",
+                    summer: "Musim Liburan Pantai (Juli - Agustus). Sangat terik & ramai. Cocok untuk pesisir pantai.",
+                    autumn: "Musim Panen Anggur & Truffle (Sept - Nov). Festival kuliner melimpah.",
+                    winter: "Wisata Budaya Sepi (Des - Maret). Harga penginapan lebih murah, kota lebih tenang."
+                },
+                foods: [
+                    { name: "Pizza Napoletana", tag: "Autentik Napoli", desc: "Pizza adonan tipis panggang kayu bakar dengan tomat San Marzano & Mozzarella." },
+                    { name: "Gelato Artisan", tag: "Dessert", desc: "Es krim tradisional Italia yang padat, lembut, dan kaya rasa alami." },
+                    { name: "Pasta Carbonara Roma", tag: "Khas Roma", desc: "Pasta resep asli menggunakan telur, keju Pecorino, dan Guanciale tanpa krim." }
+                ],
+                facts: [
+                    "Italia memiliki jumlah Situs Warisan Dunia UNESCO terbanyak di dunia (59 situs).",
+                    "Hampir €3.000 dilemparkan ke Air Mancur Trevi Roma setiap hari dan didonasikan untuk amal.",
+                    "Negara terpisah Vatikan dan San Marino terletak sepenuhnya di dalam wilayah Italia."
+                ]
+            },
+            {
+                id: "turki",
+                name: "Turki",
+                flag: "🇹🇷",
+                continent: "Asia",
+                vibe: "Sejarah",
+                capital: "Ankara",
+                currency: "Lira Turki (TRY)",
+                language: "Turki",
+                bestTime: "April - Mei & Sept - Nov",
+                heroImg: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?q=80&w=1600&auto=format&fit=crop",
+                overview: "Jembatan megah penyeberang Benua Asia dan Eropa dengan keajaiban balon udara Cappadoccia dan arsitektur Bizantium-Utsmaniyah.",
+                spots: [
+                    { name: "Balon Udara Cappadocia", rating: "4.9", bestSpot: "Lembah Goreme", entry: "Sesuai Operator", time: "Matahari Terbit", desc: "Pemandangan ratusan balon udara berwarna-warni melayang di atas cerobong peri vulkanik." },
+                    { name: "Hagia Sophia, Istanbul", rating: "4.8", bestSpot: "Lantai Utama Kubah", entry: "Sesuai Aturan Kunjungan", time: "Pagi Hari", desc: "Karya arsitektur megah dunia yang pernah menjadi katedral dan masjid bersejarah." },
+                    { name: "Pamukkale Thermal Pools", rating: "4.7", bestSpot: "Teras Travertin Putih", entry: "~200 TRY", time: "Sore Hari", desc: "Teras batu kapur putih alami berisi air panas mineral biru bak kapas." }
+                ],
+                dos: [
+                    "Gunakan penutup kepala/kerudung dan pakaian tertutup bagi wanita saat masuk masjid.",
+                    "Coba tradisi menawar dengan ramah saat berbelanja di Grand Bazaar.",
+                    "Nikmati teh khas Turki (Çay) yang disajikan dalam gelas bentuk tulip."
+                ],
+                donts: [
+                    "Jangan meniup hidung dengan keras di tempat makan umum.",
+                    "Jangan menunjuk seseorang menggunakan jari telunjuk secara langsung.",
+                    "Jangan menolak tawaran teh dari pemilik toko karena dianggap kurang ramah."
+                ],
+                seasons: {
+                    spring: "Musim Tulip Istanbul (April - Mei). Cuaca sangat sejuk & bunga bermekaran.",
+                    summer: "Wisata Pesisir Pantai (Juni - Agustus). Cuaca panas, ramai turis di resort Bodrum.",
+                    autumn: "Musim Eksplorasi Ideal (Sept - Nov). Cuaca nyaman untuk menjelajah situs kuno.",
+                    winter: "Musim Salju & Kapadokya Putih (Des - Maret). Pemandangan lanskap vulkanik tertutup salju."
+                },
+                foods: [
+                    { name: "Doner Kebab", tag: "Daging", desc: "Daging bumbu khusus panggang putar yang disajikan dengan roti pita & rempah." },
+                    { name: "Baklava", tag: "Manis", desc: "Kue pastry berlapis renyah berisi kacang pistachio disiram sirup manis." },
+                    { name: "Turkish Coffee", tag: "Kopi", desc: "Kopi pekat tanpa saring yang dimasak di atas pasir panas." }
+                ],
+                facts: [
+                    "Grand Bazaar di Istanbul adalah salah satu pasar tertutup terbesar dan tertua di dunia dengan 4.000 toko.",
+                    "Istanbul adalah satu-satunya kota di dunia yang membentang di dua benua sekaligus (Asia & Eropa).",
+                    "Bunga Tulip sebenarnya berasal dari Turki (Kekaisaran Utsmaniyah), bukan Belanda."
+                ]
+            }
+        ];
+
+        // STATE MANAGEMENT
+        let currentCountry = countriesData[0]; // Default Japan
+        let activeTab = "spots";
+        let bucketList = JSON.parse(localStorage.getItem("destinopedia_bucket")) || [];
+
+        // DOM ELEMENTS
+        const heroBg = document.getElementById("hero-bg");
+        const heroFlagIcon = document.getElementById("hero-flag-icon");
+        const heroContinentTag = document.getElementById("hero-continent-tag");
+        const heroTitle = document.getElementById("hero-title");
+        const heroSubtitle = document.getElementById("hero-subtitle");
+        const statCapital = document.getElementById("stat-capital");
+        const statCurrency = document.getElementById("stat-currency");
+        const statLanguage = document.getElementById("stat-language");
+        const statBesttime = document.getElementById("stat-besttime");
+        const selectedCountryName = document.getElementById("selected-country-name");
+        const tabContentArea = document.getElementById("tab-content-area");
+        const countriesGrid = document.getElementById("countries-grid");
+        const heroCountryPills = document.getElementById("hero-country-pills");
+        const bucketCount = document.getElementById("bucket-count");
+        const bucketDrawer = document.getElementById("bucket-drawer");
+        const bucketItemsContainer = document.getElementById("bucket-items-container");
+
+        // INITIALIZE APP
+        window.addEventListener("DOMContentLoaded", () => {
+            renderHeroPills();
+            updateHeroView(currentCountry);
+            renderTabContent();
+            renderCountriesCatalog(countriesData);
+            updateBucketCount();
+
+            // Setup Tab Listeners
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("tab-active", "text-brand-500"));
+                    document.querySelectorAll(".tab-btn").forEach(b => b.classList.add("text-slate-400"));
+                    
+                    const targetBtn = e.currentTarget;
+                    targetBtn.classList.add("tab-active");
+                    targetBtn.classList.remove("text-slate-400");
+                    
+                    activeTab = targetBtn.getAttribute("data-tab");
+                    renderTabContent();
+                });
+            });
+
+            // Setup Continent Filter Listeners
+            document.querySelectorAll(".continent-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    document.querySelectorAll(".continent-btn").forEach(b => {
+                        b.classList.remove("bg-brand-600", "text-white");
+                        b.classList.add("bg-slate-800", "text-slate-300");
+                    });
+                    e.currentTarget.classList.remove("bg-slate-800", "text-slate-300");
+                    e.currentTarget.classList.add("bg-brand-600", "text-white");
+
+                    const selectedContinent = e.currentTarget.getAttribute("data-continent");
+                    filterCountries(selectedContinent, document.getElementById("vibe-filter-select").value);
+                });
+            });
+
+            // Setup Vibe Filter Listener
+            document.getElementById("vibe-filter-select").addEventListener("change", (e) => {
+                const activeContinentBtn = document.querySelector(".continent-btn.bg-brand-600");
+                const activeContinent = activeContinentBtn ? activeContinentBtn.getAttribute("data-continent") : "all";
+                filterCountries(activeContinent, e.target.value);
+            });
+
+            // Hero Explore Button Scroll
+            document.getElementById("hero-explore-btn").addEventListener("click", () => {
+                document.getElementById("guide-tabs").scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // Mobile Menu Toggle
+            document.getElementById("mobile-menu-btn").addEventListener("click", () => {
+                document.getElementById("mobile-menu").classList.toggle("hidden");
+            });
+
+            // Search Modal Listeners
+            document.getElementById("open-search-btn").addEventListener("click", openSearchModal);
+            document.getElementById("close-search-btn").addEventListener("click", closeSearchModal);
+            document.getElementById("global-search-input").addEventListener("input", handleSearchInput);
+
+            // Bucket List Drawer Listeners
+            document.getElementById("bucket-list-btn").addEventListener("click", openBucketDrawer);
+            document.getElementById("close-bucket-btn").addEventListener("click", closeBucketDrawer);
+            document.getElementById("clear-bucket-btn").addEventListener("click", clearBucketList);
+
+            // Detail Modal Close
+            document.getElementById("close-detail-modal").addEventListener("click", () => {
+                document.getElementById("detail-modal").classList.add("hidden");
+            });
+        });
+
+        // RENDER HERO PILLS SELECTOR
+        function renderHeroPills() {
+            heroCountryPills.innerHTML = countriesData.map(c => `
+                <button onclick="selectCountryHero('${c.id}')" class="hero-pill-btn ${c.id === currentCountry.id ? 'bg-brand-600 text-white font-semibold' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'} px-3.5 py-1.5 rounded-full text-xs transition-all backdrop-blur-md flex items-center space-x-1.5 border border-slate-700/50">
+                    <span>${c.flag}</span>
+                    <span>${c.name}</span>
+                </button>
+            `).join('');
+        }
+
+        // SWITCH HERO COUNTRY
+        function selectCountryHero(countryId) {
+            const found = countriesData.find(c => c.id === countryId);
+            if (found) {
+                currentCountry = found;
+                renderHeroPills();
+                updateHeroView(currentCountry);
+                renderTabContent();
+            }
+        }
+
+        // UPDATE HERO CONTENT & STATS
+        function updateHeroView(country) {
+            heroBg.style.backgroundImage = `url('${country.heroImg}')`;
+            heroFlagIcon.textContent = country.flag;
+            heroContinentTag.textContent = country.continent;
+            heroTitle.textContent = country.name;
+            heroSubtitle.textContent = country.overview;
+            statCapital.textContent = country.capital;
+            statCurrency.textContent = country.currency;
+            statLanguage.textContent = country.language;
+            statBesttime.textContent = country.bestTime;
+            selectedCountryName.textContent = country.name;
+        }
+
+        // RENDER TAB CONTENT ACCORDING TO ACTIVE SELECTION
+        function renderTabContent() {
+            tabContentArea.className = "animate-fade-in";
+            
+            if (activeTab === "spots") {
+                tabContentArea.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${currentCountry.spots.map(spot => `
+                            <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-brand-500/50 transition-all flex flex-col justify-between group">
+                                space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+                                            <i class="fa-solid fa-star me-1"></i>${spot.rating}
+                                        </span>
+                                        <button onclick="addToBucket('${spot.name}', 'Spot Wisata - ${currentCountry.name}')" class="text-slate-400 hover:text-amber-400 p-1" title="Tambah ke Impian">
+                                            <i class="fa-regular fa-bookmark text-base"></i>
+                                        </button>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-white group-hover:text-brand-500 transition-colors font-serif-title">${spot.name}</h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">${spot.desc}</p>
+                                    <div class="pt-2 border-t border-slate-800/80 space-y-1.5 text-[11px] text-slate-400">
+                                        <div><strong class="text-slate-300">Spot Foto Terbaik:</strong> ${spot.bestSpot}</div>
+                                        <div><strong class="text-slate-300">Estimasi Tiket:</strong> ${spot.entry}</div>
+                                        <div><strong class="text-slate-300">Waktu Kunjungan:</strong> ${spot.time}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (activeTab === "culture") {
+                tabContentArea.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- DOS CARD -->
+                        <div class="bg-teal-950/20 border border-teal-800/40 rounded-2xl p-6">
+                            <h3 class="text-base font-bold text-teal-400 mb-4 flex items-center">
+                                <i class="fa-solid fa-circle-check text-lg me-2"></i>Sangat Dianjurkan (Do's)
+                            </h3>
+                            <ul class="space-y-3">
+                                ${currentCountry.dos.map(doItem => `
+                                    <li class="flex items-start space-x-3 text-xs sm:text-sm text-slate-200">
+                                        <i class="fa-solid fa-check text-teal-400 mt-1"></i>
+                                        <span>${doItem}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- DON'TS CARD -->
+                        <div class="bg-rose-950/20 border border-rose-800/40 rounded-2xl p-6">
+                            <h3 class="text-base font-bold text-rose-400 mb-4 flex items-center">
+                                <i class="fa-solid fa-circle-xmark text-lg me-2"></i>Hindari / Pantangan (Don'ts)
+                            </h3>
+                            <ul class="space-y-3">
+                                ${currentCountry.donts.map(dontItem => `
+                                    <li class="flex items-start space-x-3 text-xs sm:text-sm text-slate-200">
+                                        <i class="fa-solid fa-xmark text-rose-400 mt-1"></i>
+                                        <span>${dontItem}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else if (activeTab === "seasons") {
+                tabContentArea.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="glass-card p-5 rounded-2xl border-t-4 border-pink-400">
+                            <div class="text-pink-400 text-2xl mb-2"><i class="fa-solid fa-seedling"></i></div>
+                            <h4 class="font-bold text-white text-sm">Musim Semi (Spring)</h4>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed">${currentCountry.seasons.spring}</p>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl border-t-4 border-amber-400">
+                            <div class="text-amber-400 text-2xl mb-2"><i class="fa-solid fa-sun"></i></div>
+                            <h4 class="font-bold text-white text-sm">Musim Panas (Summer)</h4>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed">${currentCountry.seasons.summer}</p>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl border-t-4 border-orange-500">
+                            <div class="text-orange-500 text-2xl mb-2"><i class="fa-solid fa-leaf"></i></div>
+                            <h4 class="font-bold text-white text-sm">Musim Gugur (Autumn)</h4>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed">${currentCountry.seasons.autumn}</p>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl border-t-4 border-cyan-400">
+                            <div class="text-cyan-400 text-2xl mb-2"><i class="fa-solid fa-snowflake"></i></div>
+                            <h4 class="font-bold text-white text-sm">Musim Dingin (Winter)</h4>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed">${currentCountry.seasons.winter}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (activeTab === "food") {
+                tabContentArea.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${currentCountry.foods.map(food => `
+                            <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-brand-500/20 text-teal-300 text-[10px] px-2.5 py-0.5 rounded-full font-semibold border border-brand-500/30">
+                                        ${food.tag}
+                                    </span>
+                                    <button onclick="addToBucket('${food.name}', 'Kuliner - ${currentCountry.name}')" class="text-slate-400 hover:text-amber-400 p-1">
+                                        <i class="fa-regular fa-bookmark text-sm"></i>
+                                    </button>
+                                </div>
+                                <h3 class="text-base font-bold text-white font-serif-title">${food.name}</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">${food.desc}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (activeTab === "facts") {
+                tabContentArea.innerHTML = `
+                    <div class="space-y-4">
+                        ${currentCountry.facts.map((fact, idx) => `
+                            <div class="glass-card p-5 rounded-2xl flex items-start space-x-4 border border-slate-800">
+                                <div class="w-8 h-8 rounded-xl bg-brand-600/30 text-brand-400 border border-brand-500/40 flex items-center justify-center font-bold text-sm shrink-0">
+                                    ${idx + 1}
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed pt-1">${fact}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // RENDER CATALOG GRID
+        function renderCountriesCatalog(dataList) {
+            if (dataList.length === 0) {
+                countriesGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-400 text-sm">
+                        <i class="fa-solid fa-globe text-3xl mb-2 text-slate-600"></i>
+                        <p>Tidak ada negara yang cocok dengan kriteria filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            countriesGrid.innerHTML = dataList.map(c => `
+                <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-brand-500/50 transition-all group flex flex-col justify-between">
+                    <div>
+                        <div class="relative h-44 overflow-hidden">
+                            <img src="${c.heroImg}" alt="${c.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                            <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-semibold text-white flex items-center space-x-1">
+                                <span>${c.flag}</span>
+                                <span>${c.continent}</span>
+                            </span>
+                            <button onclick="addToBucket('${c.name}', 'Negara')" class="absolute top-3 right-3 bg-slate-900/80 hover:bg-amber-500 hover:text-slate-950 text-white p-2 rounded-lg backdrop-blur-md transition-colors">
+                                <i class="fa-regular fa-bookmark text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <h3 class="text-lg font-bold text-white font-serif-title group-hover:text-brand-500 transition-colors">${c.name}</h3>
+                            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">${c.overview}</p>
+                            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                                <span><i class="fa-solid fa-city me-1 text-brand-500"></i>${c.capital}</span>
+                                <span><i class="fa-solid fa-coins me-1 text-amber-400"></i>${c.currency}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5 pt-1">
+                        <button onclick="openCountryDetailModal('${c.id}')" class="w-full bg-slate-800 hover:bg-brand-600 text-slate-200 hover:text-white py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-center space-x-2">
+                            <span>Jelajahi Info Negara</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // FILTER LOGIC
+        function filterCountries(continent, vibe) {
+            let filtered = countriesData;
+            if (continent && continent !== "all") {
+                filtered = filtered.filter(c => c.continent.toLowerCase() === continent.toLowerCase());
+            }
+            if (vibe && vibe !== "all") {
+                filtered = filtered.filter(c => c.vibe.toLowerCase() === vibe.toLowerCase());
+            }
+            renderCountriesCatalog(filtered);
+        }
+
+        // BUCKET LIST STORAGE & DRAWER LOGIC
+        function addToBucket(itemName, category) {
+            const exists = bucketList.some(item => item.name === itemName);
+            if (!exists) {
+                bucketList.push({ name: itemName, category: category, date: new Date().toLocaleDateString("id-ID") });
+                localStorage.setItem("destinopedia_bucket", JSON.stringify(bucketList));
+                updateBucketCount();
+                showToast(`"${itemName}" ditambahkan ke Daftar Impian!`);
+            } else {
+                showToast(`"${itemName}" sudah ada di Daftar Impian Anda.`);
+            }
+        }
+
+        function removeFromBucket(index) {
+            bucketList.splice(index, 1);
+            localStorage.setItem("destinopedia_bucket", JSON.stringify(bucketList));
+            updateBucketCount();
+            renderBucketDrawerItems();
+        }
+
+        function clearBucketList() {
+            bucketList = [];
+            localStorage.removeItem("destinopedia_bucket");
+            updateBucketCount();
+            renderBucketDrawerItems();
+        }
+
+        function updateBucketCount() {
+            bucketCount.textContent = bucketList.length;
+        }
+
+        function openBucketDrawer() {
+            renderBucketDrawerItems();
+            bucketDrawer.classList.remove("translate-x-full");
+        }
+
+        function closeBucketDrawer() {
+            bucketDrawer.classList.add("translate-x-full");
+        }
+
+        function renderBucketDrawerItems() {
+            if (bucketList.length === 0) {
+                bucketItemsContainer.innerHTML = `
+                    <div class="text-center py-12 text-slate-500 text-xs">
+                        <i class="fa-regular fa-bookmark text-3xl mb-2 text-slate-600 block"></i>
+                        Belum ada destinasi atau catatan impian yang disimpan.
+                    </div>
+                `;
+                return;
+            }
+
+            bucketItemsContainer.innerHTML = bucketList.map((item, idx) => `
+                <div class="glass-card p-3.5 rounded-xl flex items-center justify-between border border-slate-800">
+                    <div>
+                        <span class="text-[10px] text-brand-400 uppercase font-semibold block">${item.category}</span>
+                        <h4 class="text-xs font-bold text-white">${item.name}</h4>
+                        <span class="text-[9px] text-slate-500">Disimpan ${item.date}</span>
+                    </div>
+                    <button onclick="removeFromBucket(${idx})" class="text-slate-500 hover:text-rose-400 p-2">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // MODAL DETIL NEGARA
+        function openCountryDetailModal(countryId) {
+            const country = countriesData.find(c => c.id === countryId);
+            if (!country) return;
+
+            const modalContent = document.getElementById("modal-content");
+            modalContent.innerHTML = `
+                <div class="relative h-64 sm:h-80 overflow-hidden">
+                    <img src="${country.heroImg}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 right-6 space-y-2">
+                        <span class="bg-brand-600 text-white text-xs px-3 py-1 rounded-full font-semibold">${country.flag} ${country.continent}</span>
+                        <h2 class="text-3xl font-bold text-white font-serif-title">${country.name}</h2>
+                        <p class="text-xs text-slate-300">${country.overview}</p>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs">
+                        <div>
+                            <span class="text-slate-400 block text-[10px]">Ibu Kota</span>
+                            <span class="font-semibold text-white">${country.capital}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px]">Mata Uang</span>
+                            <span class="font-semibold text-amber-400">${country.currency}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px]">Bahasa Resmi</span>
+                            <span class="font-semibold text-white">${country.language}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px]">Waktu Terbaik</span>
+                            <span class="font-semibold text-teal-400">${country.bestTime}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-white font-serif-title mb-3">Spot Wisata Ikonik</h4>
+                        <div class="space-y-2">
+                            ${country.spots.map(s => `
+                                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 text-xs flex justify-between items-center">
+                                    <div>
+                                        <div class="font-semibold text-white">${s.name}</div>
+                                        <div class="text-[11px] text-slate-400">${s.desc}</div>
+                                    </div>
+                                    <span class="text-amber-400 font-bold shrink-0 ms-2"><i class="fa-solid fa-star me-1"></i>${s.rating}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+                        <button onclick="selectCountryHero('${country.id}'); document.getElementById('detail-modal').classList.add('hidden'); window.scrollTo({top:0, behavior:'smooth'});" class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-xs font-semibold">
+                            Jadikan Fokus Eksplorasi Utama
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("detail-modal").classList.remove("hidden");
+        }
+
+        // SEARCH OVERLAY LOGIC
+        function openSearchModal() {
+            document.getElementById("search-modal").classList.remove("hidden");
+            document.getElementById("global-search-input").focus();
+        }
+
+        function closeSearchModal() {
+            document.getElementById("search-modal").classList.add("hidden");
+        }
+
+        function handleSearchInput(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const container = document.getElementById("search-results-container");
+
+            if (!query) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic">Coba ketik kata kunci di atas untuk mencari secara langsung...</p>`;
+                return;
+            }
+
+            const results = countriesData.filter(c => 
+                c.name.toLowerCase().includes(query) ||
+                c.continent.toLowerCase().includes(query) ||
+                c.spots.some(s => s.name.toLowerCase().includes(query)) ||
+                c.foods.some(f => f.name.toLowerCase().includes(query))
+            );
+
+            if (results.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400">Tidak ditemukan hasil untuk "${query}"</p>`;
+                return;
+            }
+
+            container.innerHTML = results.map(c => `
+                <div onclick="selectCountryHero('${c.id}'); closeSearchModal();" class="p-3 bg-slate-800/80 hover:bg-brand-900/40 rounded-xl cursor-pointer transition-colors flex items-center justify-between border border-slate-700/50">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xl">${c.flag}</span>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">${c.name}</h4>
+                            <p class="text-[11px] text-slate-400">${c.capital} • ${c.continent}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
+                </div>
+            `).join('');
+        }
+
+        // TOAST NOTIFICATION UTILITY
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "fixed bottom-6 right-6 z-50 bg-brand-600 text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center space-x-2 animate-fade-in";
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-amber-400 text-sm"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
